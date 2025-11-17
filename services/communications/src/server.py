@@ -9,7 +9,6 @@ async def serve():
     # Register the service implementation
     communications_pb2_grpc.add_HelloWorldServicer_to_server(HelloWorld(), server)
 
-
     listen_addr = '[::]:50051'
     server.add_insecure_port(listen_addr)
     print(f"Starting gRPC server with reflection on {listen_addr}")
