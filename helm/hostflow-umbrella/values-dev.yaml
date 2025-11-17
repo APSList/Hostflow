@@ -1,0 +1,76 @@
+service-a:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer  # <-- izpostavi z LoadBalancer
+    port: 8080
+  env: {}
+
+service-b:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8081
+  env: {}
+
+service-c:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8082
+  env: {}
+
+service-d:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8083
+  env: {}
+
+service-e:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8084
+  env: {}
+
+service-f:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8085
+  env: {}
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: dev
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 80
+  env: {}
