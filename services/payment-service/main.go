@@ -38,6 +38,8 @@ import (
 	"os"
 	"payment-service/internal/bootstrap"
 
+	_ "payment-service/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.uber.org/fx"
@@ -58,7 +60,11 @@ func isValidEnvironment(environment *string) bool {
 	return false
 }
 
-// ======== ENTRY POINT ========
+// @title Payment Service API
+// @version 1.0
+// @description Dokumentacija za Payment microservice
+// @BasePath /
+
 func main() {
 
 	//	======== CHECK ENVIRONMENT ========

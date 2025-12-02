@@ -41,6 +41,8 @@ import (
 	"payment-service/internal/payments"
 	"payment-service/pkg/lib"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/fx"
 )
 
@@ -73,6 +75,8 @@ func registerHooks(
 
 				// Perform any necessary setup or initialization tasks for the routes
 				routes.Setup()
+
+				router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 				// Start the router by running it in a separate goroutine
 				go router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT")))

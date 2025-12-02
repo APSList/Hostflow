@@ -20,11 +20,11 @@ func GetPaymentsController(service *PaymentsService) *PaymentsController {
 
 // GetPaymentsHandler godoc
 // @Summary Get all payments
-// @Description Returns a list of all payments
+// @Description Returns a list of all payments admaksdmaslkdmaslkdmnaslkdmnasdlkma
 // @Tags payments
 // @Produce json
 // @Success 200 {array} Payment
-// @Failure 500 {object} map[string]string{"error": "description"}
+// @Failure 500 {object} map[string]string
 // @Router /payments [get]
 func (c *PaymentsController) GetPaymentsHandler(ctx *gin.Context) {
 	payments, err := c.service.GetPayments()
