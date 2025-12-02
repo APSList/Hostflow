@@ -32,7 +32,7 @@ SOFTWARE.
 package bootstrap
 
 import (
-	"payment-service/pkg/payments"
+	"payment-service/internal/payments"
 )
 
 // ======== TYPES ========

@@ -38,8 +38,8 @@ import (
 	"fmt"
 	"os"
 	"payment-service/internal/middlewares"
+	"payment-service/internal/payments"
 	"payment-service/pkg/lib"
-	"payment-service/pkg/payments"
 
 	"go.uber.org/fx"
 )
