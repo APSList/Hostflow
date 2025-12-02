@@ -32,9 +32,7 @@ SOFTWARE.
 package bootstrap
 
 import (
-	"payment-service/pkg/auth"
 	"payment-service/pkg/payments"
-	"payment-service/pkg/users"
 )
 
 // ======== TYPES ========
@@ -51,13 +49,9 @@ type Routes []Route
 
 // GetRoutes provides all the routes
 func GetRoutes(
-	userRoutes users.UsersRoutes,
-	authRoutes auth.AuthRoutes,
 	paymentRoutes payments.PaymentsRoutes,
 ) Routes {
 	return Routes{
-		userRoutes,
-		authRoutes,
 		paymentRoutes,
 	}
 }

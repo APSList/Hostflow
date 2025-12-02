@@ -71,6 +71,5 @@ func (m Middlewares) Setup() {
 var Module = fx.Options(
 	fx.Provide(GetCorsMiddleware),
 	fx.Provide(GetErrorsMiddleware),
-	fx.Provide(GetAuthMiddleware),
 	fx.Provide(GetMiddlewares),
 )

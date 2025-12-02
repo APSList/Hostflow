@@ -38,10 +38,8 @@ import (
 	"fmt"
 	"os"
 	"payment-service/internal/middlewares"
-	"payment-service/pkg/auth"
 	"payment-service/pkg/lib"
 	"payment-service/pkg/payments"
-	"payment-service/pkg/users"
 
 	"go.uber.org/fx"
 )
@@ -104,8 +102,6 @@ var Module = fx.Options(
 	middlewares.Module,
 
 	// Context exports
-	users.Context,
-	auth.Context,
 	payments.Context,
 
 	// Bootstrap exports
