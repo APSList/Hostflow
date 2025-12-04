@@ -35,4 +35,4 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install hostflow-booking-service ./helm/charts/booking-service --namespace default
+          helm upgrade --install hostflow ./helm/charts/booking-service --namespace default
