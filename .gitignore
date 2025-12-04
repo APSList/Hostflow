@@ -67,8 +67,7 @@ yarn-error.log*
 
 # 2. Ignoriraj vse datoteke, ki se končajo z -secret.yaml, ne glede na njihovo okolje
 # (npr. values-dev-secret.yaml, values-prod-secret.yaml, values-staging-secret.yaml)
-**/*-secret.yaml
+**/*-secrets.yaml
 
 # 3. Ignoriraj splošne secret datoteke, če jih uporabljate
-values-secret.yaml
-/helm/charts/payment-service/templates/values-dev-secrets.yaml
+values-secrets.yaml
