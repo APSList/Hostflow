@@ -21,7 +21,7 @@ jobs:
 
       - name: Build
         run: |
-          cd services/communications
+          cd services/payment-service
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/payment-service:latest .
 
       - name: Push Docker image to Docker Hub
