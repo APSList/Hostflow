@@ -107,9 +107,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// fx.NopLogger disables the logger
 	fx.New(
 		bootstrap.Module,
-		fx.NopLogger,
 	).Run()
 }

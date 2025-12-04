@@ -32,6 +32,7 @@ SOFTWARE.
 package bootstrap
 
 import (
+	"payment-service/internal/invoice"
 	"payment-service/internal/payments"
 )
 
@@ -50,9 +51,11 @@ type Routes []Route
 // GetRoutes provides all the routes
 func GetRoutes(
 	paymentRoutes payments.PaymentsRoutes,
+	invoiceRoutes invoice.InvoiceRoutes,
 ) Routes {
 	return Routes{
 		paymentRoutes,
+		invoiceRoutes,
 	}
 }
 

@@ -1,6 +1,8 @@
 package payments
 
-import "go.uber.org/fx"
+import (
+	"go.uber.org/fx"
+)
 
 // ======== EXPORTS ========
 
@@ -10,4 +12,5 @@ var Context = fx.Options(
 	fx.Provide(GetPaymentsService),
 	fx.Provide(GetPaymentsRepository),
 	fx.Provide(SetPaymentsRoutes),
+	fx.Provide(GetStripeService),
 )

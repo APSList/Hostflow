@@ -48,7 +48,6 @@ type Router = gin.Engine
 
 // GetRouter retrieves the router used by the API.
 func GetRouter() *Router {
-
 	// ======== ROUTER ========
 	router := gin.New()
 

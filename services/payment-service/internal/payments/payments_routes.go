@@ -32,6 +32,8 @@ func (route PaymentsRoutes) Setup() {
 	api := route.router.Group("/payments")
 	{
 		api.GET("/", route.paymentsController.GetPaymentsHandler)
+		api.POST("/", route.paymentsController.CreatePaymentHandler)
+
 		// kasneje lahko dodamo POST, PUT, DELETE
 	}
 }

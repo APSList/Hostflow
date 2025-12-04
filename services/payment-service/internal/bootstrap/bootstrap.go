@@ -37,6 +37,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"payment-service/internal/invoice"
 	"payment-service/internal/middlewares"
 	"payment-service/internal/payments"
 	"payment-service/pkg/lib"
@@ -107,6 +108,7 @@ var Module = fx.Options(
 
 	// Context exports
 	payments.Context,
+	invoice.Context,
 
 	// Bootstrap exports
 	fx.Provide(GetRoutes),

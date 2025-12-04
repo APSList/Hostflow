@@ -21,7 +21,7 @@ func (r *PaymentsRepository) GetPayments() ([]Payment, error) {
 	rows, err := r.db.Query(context.Background(), `
         SELECT *
         FROM payment
-        ORDER BY "CreatedAt" DESC
+        ORDER BY "created_at" DESC
     `)
 	if err != nil {
 		return nil, err

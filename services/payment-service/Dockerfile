@@ -4,6 +4,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+RUN swag init --parseDependency --parseInternal --parseDepth 1
 RUN go build -o payment-service .
 
 # --- FINAL STAGE ---
