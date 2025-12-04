@@ -35,4 +35,8 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install hostflow ./helm/charts/booking-service --namespace default
+          helm upgrade --install hostflow-booking-service ./helm/charts/booking-service \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/booking-service \
+            --set image.tag=latest \
+            --set service.port=8080
