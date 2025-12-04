@@ -27,3 +27,18 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/payment-service:latest
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install hostflow ./helm/charts/payment-service \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/payment-service \
+            --set image.tag=latest \
+            --set actualSecrets.STRIPE_API_KEY="${{ secrets.PROD_STRIPE_KEY }}" \
+            --set actualSecrets.DATABASE_URL="${{ secrets.PROD_DB_URL }}" \
+            --set actualSecrets.JWT_SECRET="${{ secrets.PROD_JWT_SECRET }}" \
