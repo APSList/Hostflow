@@ -39,6 +39,7 @@ jobs:
             --namespace default \
             --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/payment-service \
             --set image.tag=latest \
+            --set image.pullPolicy=Always \
             --set actualSecrets.STRIPE_API_KEY="${{ secrets.PROD_STRIPE_KEY }}" \
             --set actualSecrets.DATABASE_URL="${{ secrets.PROD_DB_URL }}" \
             --set actualSecrets.JWT_SECRET="${{ secrets.PROD_JWT_SECRET }}" \
