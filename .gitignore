@@ -60,14 +60,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# 1. Ignoriraj katerokoli datoteko z imenom "secrets.yaml" ali "secrets.yml" v kateremkoli pod-direktoriju.
-# Uporabno, če nekdo shrani Secret v maps/chart-name/secrets.yaml.
-**/secrets.yaml
-**/secrets.yml
+# .helmignore (in .gitignore)
 
-# 2. Ignoriraj vse datoteke, ki se končajo z -secret.yaml, ne glede na njihovo okolje
-# (npr. values-dev-secret.yaml, values-prod-secret.yaml, values-staging-secret.yaml)
-**/*-secrets.yaml
-
-# 3. Ignoriraj splošne secret datoteke, če jih uporabljate
-values-secrets.yaml
+# ... ostalo
+values-secret.yaml
+values-dev-secret.yaml
+values-prod-secret.yaml
+# ali bolj posplošeno (priporočeno):
+**/*-secret.yaml
