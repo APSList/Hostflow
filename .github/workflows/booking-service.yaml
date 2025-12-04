@@ -4,7 +4,7 @@ on:
       - actions-test
     paths:
       - "services/booking-service/**"
-      - ".github/workflows/booking-service.yml"
+      - ".github/workflows/booking-service.yaml"
 
 jobs:
   build:
