@@ -1,21 +1,39 @@
 package main
 
 import (
-	"net/http"
+	_ "hostflow/profile-service/docs" // Import generated swagger docs
+	"hostflow/profile-service/internal/bootstrap"
+	"log"
 
-	gin "github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"go.uber.org/fx"
 )
 
+// @title Hostflow Profile Service API
+// @version 1.0
+// @description This is a comprehensive profile service API for managing users and organizations.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.example.com/support
+// @contact.email support@hostflow.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+// @schemes http https
+
+// @tag.name users
+// @tag.description Operations related to users
+
 func main() {
-	router := gin.Default()
-	router.GET("/health", healthCheck)
-
-	err := router.Run("0.0.0.0:8085")
-	if err != nil {
-		return
+	if err := godotenv.Load("./dev.env"); err != nil {
+		log.Printf("Warning: Error loading dev.env file: %v", err)
 	}
-}
 
-func healthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"health": true})
+	fx.New(
+		bootstrap.Module,
+	).Run()
 }
