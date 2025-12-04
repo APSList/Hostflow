@@ -27,3 +27,14 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/booking-service:latest
+
+      - name: Setup kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install booking-service ./helm/charts/booking-service \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/booking-service \
+            --set image.tag=latest
