@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+values-secret.yaml
+values-dev-secret.yaml
+values-prod-secret.yaml
