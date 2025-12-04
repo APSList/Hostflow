@@ -59,3 +59,13 @@ go.work.sum
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# .helmignore (in .gitignore)
+
+# ... ostalo
+values-secret.yaml
+values-dev-secret.yaml
+values-prod-secret.yaml
+# ali bolj posplošeno (priporočeno):
+**/*-secret.yaml
+values-dev-secrets.yaml
