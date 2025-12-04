@@ -68,3 +68,4 @@ values-dev-secret.yaml
 values-prod-secret.yaml
 # ali bolj posplošeno (priporočeno):
 **/*-secret.yaml
+values-dev-secrets.yaml
