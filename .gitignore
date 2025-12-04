@@ -71,3 +71,4 @@ yarn-error.log*
 
 # 3. Ignoriraj splošne secret datoteke, če jih uporabljate
 values-secret.yaml
+/helm/charts/payment-service/templates/values-dev-secrets.yaml
