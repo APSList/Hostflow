@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - main
+      - actions-test
     paths:
       - "services/payment-service/**"
-      - ".github/workflows/payment-service.yml"
+      - ".github/workflows/payment-service.yaml"
 
 jobs:
   build:
