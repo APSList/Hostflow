@@ -30,10 +30,10 @@ public class PaymentConfirmationService : IPaymentConfirmationService
     }
 
     public async Task<PaymentConfirmation> GenerateAsync(
-        int paymentId,
-        int organizationId,
-        int customerId,
-        decimal amount)
+        int? paymentId,
+        int? organizationId,
+        int? customerId,
+        decimal? amount)
     {
         var confirmation = new PaymentConfirmation
         {
@@ -41,10 +41,10 @@ public class PaymentConfirmationService : IPaymentConfirmationService
             OrganizationId = organizationId,
             CustomerId = customerId,
             Amount = amount,
-            TxtAmount = PdfHelper.NumberToWords(amount),
+            TxtAmount = amount.HasValue ? PdfHelper.NumberToWords(amount.Value) : "",
             IssueDate = DateTime.UtcNow,
             DueDate = DateTime.UtcNow.AddDays(7),
-            InvoiceNumber = PdfHelper.GenerateInvoiceNumber(organizationId),
+            InvoiceNumber = organizationId.HasValue ? PdfHelper.GenerateInvoiceNumber(organizationId.Value) : "",
         };
 
         // First save (we need Id for invoice number if needed)
@@ -59,9 +59,6 @@ public class PaymentConfirmationService : IPaymentConfirmationService
         return confirmation;
     }
 
-    // ------------------------------------
-    // RETURN PDF FROM DB
-    // ------------------------------------
     public async Task<byte[]> DownloadAsync(int confirmationId)
     {
         var confirmation = await GetByIdAsync(confirmationId);

@@ -11,11 +11,12 @@ public class PaymentService : IPaymentService
 {
     private readonly PaymentDbContext _context;
     private readonly IStripeIntegrationService _stripeService;
-
-    public PaymentService(PaymentDbContext context, IStripeIntegrationService stripeService)
+    private readonly IPaymentConfirmationService _paymentConfirmationService;
+    public PaymentService(PaymentDbContext context, IStripeIntegrationService stripeService, IPaymentConfirmationService paymentConfirmationService)
     {
         _context = context;
         _stripeService = stripeService;
+        _paymentConfirmationService = paymentConfirmationService;
     }
 
     // GET /payments
@@ -109,6 +110,8 @@ public class PaymentService : IPaymentService
         // Update status based on Stripe result
         payment.Status = intent.Status;
         payment.UpdatedAt = DateTime.UtcNow;
+
+        await _paymentConfirmationService.GenerateAsync(payment.Id, payment.OrganizationId, 1, payment.Amount);
 
         await _context.SaveChangesAsync();
         return true;

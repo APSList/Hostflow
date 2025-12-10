@@ -32,6 +32,12 @@ public class PaymentConfirmationController : ControllerBase
         {
             var pdfBytes = await _service.DownloadAsync(id);
 
+            if(pdfBytes is null)
+            {
+                return NotFound();
+
+            }
+
             return File(
                 pdfBytes,
                 "application/pdf",
