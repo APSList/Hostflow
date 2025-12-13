@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using property_service.Database;
 using property_service.Interfaces;
 using property_service.Options;
@@ -35,6 +37,15 @@ builder.Services.AddSingleton<ISupabaseStorageService, SupabaseStorageService>()
 builder.Services.AddDbContext<PropertyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
+//Health checks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy())
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("Supabase") ?? "",
+        name: "postgres",
+        failureStatus: HealthStatus.Unhealthy
+    );
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,6 +54,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Health endpoints
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = check => check.Name == "self"
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = _ => true
+});
 
 app.UseHttpsRedirection();
 
