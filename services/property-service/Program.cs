@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using property_service.Database;
+using property_service.GraphQl.Queries;
 using property_service.Interfaces;
 using property_service.Options;
 using property_service.Services;
@@ -31,6 +32,12 @@ builder.Services
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddSingleton<ISupabaseStorageService, SupabaseStorageService>();
 
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<PropertyQuery>()
+    .AddFiltering()
+    .AddSorting();
+
 //Database
 builder.Services.AddDbContext<PropertyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
@@ -43,6 +50,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// GraphQL endpoint
+app.MapGraphQL("/graphql");
 
 app.UseHttpsRedirection();
 
