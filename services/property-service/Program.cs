@@ -1,0 +1,53 @@
+using Microsoft.EntityFrameworkCore;
+using property_service.Database;
+using property_service.Interfaces;
+using property_service.Options;
+using property_service.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+//Options
+builder.Services
+    .AddOptions<SupabaseStorageOptions>()
+    .Bind(builder.Configuration.GetSection(SupabaseStorageOptions.SectionName))
+    .ValidateDataAnnotations()
+    .Validate(opt => !string.IsNullOrEmpty(opt.Url), "Url should not be empty")
+    .Validate(opt => !string.IsNullOrEmpty(opt.ServiceRoleKey), "Url should not be empty")
+    .ValidateOnStart();
+
+//Dependency Injection
+builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddSingleton<ISupabaseStorageService, SupabaseStorageService>();
+
+//Database
+builder.Services.AddDbContext<PropertyDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
