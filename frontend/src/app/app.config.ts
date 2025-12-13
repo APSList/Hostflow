@@ -9,13 +9,21 @@ import {MessageService} from "primeng/api";
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
-    provideAnimationsAsync(), //Legacy
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+          prefix: 'p',
+          darkModeSelector: 'system',
+          cssLayer: false
+        }
       }
     }),
+    providePrimeNG({
+      ripple: true
+    }),
+    provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
+    provideAnimationsAsync(), //Legacy
     MessageService
 
   ]
