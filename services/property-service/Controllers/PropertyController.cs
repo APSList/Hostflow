@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using property_service.Interfaces;
-using property_service.Models;
+using property_service.Models.PropertyModels;
+
+namespace property_service.Controllers;
 
 [ApiController]
 [Route("property")]
@@ -14,63 +16,71 @@ public class PropertyController : ControllerBase
         _propertyService = propertyService;
     }
 
-    // GET /Property
+    // GET /property
     [HttpGet]
     [EndpointSummary("Get all properties")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Property>))]
-    public async Task<ActionResult<List<Property>>> GetProperties()
+    public async Task<ActionResult<List<Property>>> GetProperties([FromQuery] PropertyFilter filter)
     {
-        var properties = _propertyService.GetProperties();
+        var properties = await _propertyService.GetPropertiesAsync(filter);
         return Ok(properties);
     }
 
-    // GET /Property/{id}
+    // GET /property/{id}
     [HttpGet("{id:int}")]
     [EndpointSummary("Retrieves the property matching the specified ID.")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Property))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Property>> GetById(int id)
     {
-        var property = _propertyService.GetPropertyById(id);
-
+        var property = await _propertyService.GetPropertyByIdAsync(id);
         if (property == null)
             return NotFound();
 
         return Ok(property);
     }
 
-    // POST /Property
+    // POST /property
     [HttpPost]
-    [EndpointSummary("Inserts a new property and returns its ID.")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+    [EndpointSummary("Creates a new property with optional images.")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Consumes("application/json")]
-    public async Task<ActionResult<int>> Insert([FromBody] PropertyCreateRequestDTO createRequestDTO)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<int>> Insert(
+        [FromForm] PropertyCreateRequestDTO dto)
     {
-        var created = _propertyService.InsertProperty(createRequestDTO);
-        return Ok(created);
+        var propertyId = await _propertyService.InsertPropertyAsync(dto);
+        return Ok(propertyId);
     }
 
-    // PUT /Property/{id}
+    // PUT /property/{id}
     [HttpPut("{id:int}")]
     [EndpointSummary("Updates the property matching the specified ID.")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Consumes("application/json")]
-    public async Task<ActionResult<int>> Update([FromBody] PropertyUpdateRequestDTO updateRequestDTO)
+    public async Task<ActionResult<int>> Update(
+        int id,
+        [FromBody] PropertyCreateRequestDTO dto)
     {
-        var id = _propertyService.UpdateProperty(updateRequestDTO);
-        return Ok(id);
+        var updatedId = await _propertyService.UpdatePropertyAsync(id, dto);
+        if (updatedId == null)
+            return NotFound();
+
+        return Ok(updatedId);
     }
 
-    // DELETE /Property/{id}
+    // DELETE /property/{id}
     [HttpDelete("{id:int}")]
-    [EndpointSummary("Deletes the property matching the specified ID.")]
+    [EndpointSummary("Deletes the property matching the specified ID and all its images.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-        _propertyService.DeletePropertyById(id);
+        var deletedId = await _propertyService.DeletePropertyByIdAsync(id);
+        if (deletedId == null)
+            return NotFound();
+
         return Ok();
     }
 }
