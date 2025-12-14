@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {BookingsComponent} from "./pages/bookings/bookings";
-import {PropertiesComponent} from "./pages/properties/properties.component";
 import {PaymentsComponent} from "./pages/payments/payments.component";
 import {CustomersComponent} from "./pages/customers/customers.component";
 import {UsersComponent} from "./pages/users/users.component";
 import {DashboardCustomerComponent} from "./pages/dashboard-customer/dashboard-customer";
+import {PropertyList} from "./pages/properties/property-list/property-list";
+import {PropertyForm} from "./pages/properties/property-form/property-form";
+import {PropertyDetail} from "./pages/properties/property-detail/property-detail";
 
 export const routes: Routes = [
   {
@@ -25,10 +27,10 @@ export const routes: Routes = [
     path: 'bookings',
     component: BookingsComponent
   },
-  {
-    path: 'properties',
-    component: PropertiesComponent
-  },
+  { path: 'properties', component: PropertyList },
+  { path: 'properties/new', component: PropertyForm },
+  { path: 'properties/:id', component: PropertyDetail },
+  { path: 'properties/:id/edit', component: PropertyForm },
   {
     path: 'payments',
     component: PaymentsComponent
