@@ -6,6 +6,7 @@ using payment_service.Database;
 using payment_service.Interfaces;
 using payment_service.Options;
 using payment_service.Services;
+using Prometheus;
 using Serilog;
 using Serilog.Formatting.Compact;
 
@@ -91,6 +92,9 @@ app.MapGet("/error", () =>
     Log.Error("Something went wrong");
     return Results.Problem("Error");
 });
+
+app.UseHttpMetrics();     // meri HTTP odzivnost, status kode, metode
+app.MapMetrics();         // /metrics endpoint
 
 app.UseHttpsRedirection();
 

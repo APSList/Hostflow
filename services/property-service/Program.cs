@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Prometheus;
 using property_service.Database;
 using property_service.GraphQl.Queries;
 using property_service.Interfaces;
@@ -106,6 +107,9 @@ app.MapGet("/error", () =>
     Log.Error("Something went wrong");
     return Results.Problem("Error");
 });
+
+app.UseHttpMetrics();     // meri HTTP odzivnost, status kode, metode
+app.MapMetrics();         // /metrics endpoint
 
 app.UseHttpsRedirection();
 
