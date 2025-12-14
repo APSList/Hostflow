@@ -70,7 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Health endpoints
-app.MapHealthChecks("/health", new HealthCheckOptions
+app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = check => check.Name == "self"
 });
