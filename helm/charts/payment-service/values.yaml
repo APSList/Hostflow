@@ -54,12 +54,17 @@ resources: {}
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /health
     port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
 readinessProbe:
   httpGet:
-    path: /
+    path: /health
     port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
 
 autoscaling:
   enabled: false
@@ -76,19 +81,11 @@ affinity: {}
 
 # Environment variables for the payment service
 env:
-  APP_HOST: "0.0.0.0"
-  APP_PORT: "8080"
-  APP_NAME: "PaymentService"
-  APP_VERSION: "1.0.0"
-  APP_AUTHOR: "Tilen Anzeljc"
-  LOG_LEVEL: "debug"
-  ENVIRONMENT: "development"
+  ASPNETCORE_ENVIRONMENT: Development
 
-# Secrets for sensitive information
+# Secrets for sensitive information (mapped for .NET)
 secrets:
-  STRIPE_API_KEY:
-    key: STRIPE_API_KEY_VALUE
-  DATABASE_URL:
-    key: DATABASE_URL_VALUE
-  JWT_SECRET:
-    key: JWT_SECRET_VALUE
+  ConnectionStrings__Supabase:
+    key: DATABASE_URL
+  Stripe__ApiKey:
+    key: STRIPE_API_KEY

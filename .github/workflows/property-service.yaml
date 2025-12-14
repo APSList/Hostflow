@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - actions-test
     paths:
       - "services/property-service/**"
       - ".github/workflows/property-service.yml"
