@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - main
+      - actions-test
     paths:
       - "services/booking-service/**"
-      - ".github/workflows/booking-service.yml"
+      - ".github/workflows/booking-service.yaml"
 
 jobs:
   build:
@@ -27,3 +27,16 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/booking-service:latest
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install hostflow ./helm/charts/booking-service \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/booking-service \
+            --set image.tag=latest \
+            --set service.port=8080

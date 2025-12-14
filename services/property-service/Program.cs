@@ -1,9 +1,15 @@
+﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using property_service.Database;
 using property_service.GraphQl.Queries;
 using property_service.Interfaces;
 using property_service.Options;
 using property_service.Services;
+using Serilog;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.Network;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +48,30 @@ builder.Services
 builder.Services.AddDbContext<PropertyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
+//Logging
+builder.Host.UseSerilog((context, config) =>
+{
+    config
+        .MinimumLevel.Information()
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Service", "property-service")
+        .WriteTo.Console()
+        .WriteTo.Http(
+            requestUri: "http://localhost:5044", // lokalni Logstash
+            queueLimitBytes: null,
+            textFormatter: new RenderedCompactJsonFormatter()
+        );
+});
+
+//Health checks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy())
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("Supabase") ?? "",
+        name: "postgres",
+        failureStatus: HealthStatus.Unhealthy
+    );
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,6 +83,29 @@ if (app.Environment.IsDevelopment())
 
 // GraphQL endpoint
 app.MapGraphQL("/graphql");
+
+// Health endpoints
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Name == "self"
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = _ => true
+});
+
+app.MapGet("/ok", () =>
+{
+    Log.Information("OK endpoint called");
+    return "OK";
+});
+
+app.MapGet("/error", () =>
+{
+    Log.Error("Something went wrong");
+    return Results.Problem("Error");
+});
 
 app.UseHttpsRedirection();
 
