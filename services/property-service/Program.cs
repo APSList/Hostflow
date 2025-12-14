@@ -1,10 +1,14 @@
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using property_service.Database;
 using property_service.Interfaces;
 using property_service.Options;
 using property_service.Services;
+using Serilog;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.Network;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +41,21 @@ builder.Services.AddSingleton<ISupabaseStorageService, SupabaseStorageService>()
 builder.Services.AddDbContext<PropertyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
+//Logging
+builder.Host.UseSerilog((context, config) =>
+{
+    config
+        .MinimumLevel.Information()
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Service", "property-service")
+        .WriteTo.Console()
+        .WriteTo.Http(
+            requestUri: "http://localhost:5044", // lokalni Logstash
+            queueLimitBytes: null,
+            textFormatter: new RenderedCompactJsonFormatter()
+        );
+});
+
 //Health checks
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy())
@@ -64,6 +83,18 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = _ => true
+});
+
+app.MapGet("/ok", () =>
+{
+    Log.Information("OK endpoint called");
+    return "OK";
+});
+
+app.MapGet("/error", () =>
+{
+    Log.Error("Something went wrong");
+    return Results.Problem("Error");
 });
 
 app.UseHttpsRedirection();

@@ -6,6 +6,8 @@ using payment_service.Database;
 using payment_service.Interfaces;
 using payment_service.Options;
 using payment_service.Services;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,21 @@ builder.Services.AddScoped<IPaymentConfirmationService, PaymentConfirmationServi
 builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
+//Logging
+builder.Host.UseSerilog((context, config) =>
+{
+    config
+        .MinimumLevel.Information()
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Service", "payment-service")
+        .WriteTo.Console()
+        .WriteTo.Http(
+            requestUri: "http://localhost:5044", // lokalni Logstash
+            queueLimitBytes: null,
+            textFormatter: new RenderedCompactJsonFormatter()
+        );
+});
+
 //Health checks
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy())
@@ -61,6 +78,18 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = _ => true
+});
+
+app.MapGet("/ok", () =>
+{
+    Log.Information("OK endpoint called");
+    return "OK";
+});
+
+app.MapGet("/error", () =>
+{
+    Log.Error("Something went wrong");
+    return Results.Problem("Error");
 });
 
 app.UseHttpsRedirection();
