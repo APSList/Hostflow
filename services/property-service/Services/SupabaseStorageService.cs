@@ -38,7 +38,7 @@ public class SupabaseStorageService : ISupabaseStorageService
 
     public async Task<string> UploadPropertyImageAsync(int propertyId, IFormFile file)
     {
-        var extension = Path.GetExtension(file.FileName);
+        var extension = System.IO.Path.GetExtension(file.FileName);
         var fileName = $"{Guid.NewGuid()}{extension}";
         var filePath = $"properties/{propertyId}/{fileName}";
 

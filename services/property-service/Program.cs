@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using property_service.Database;
+using property_service.GraphQl.Queries;
 using property_service.Interfaces;
 using property_service.Options;
 using property_service.Services;
@@ -36,6 +37,12 @@ builder.Services
 //Dependency Injection
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddSingleton<ISupabaseStorageService, SupabaseStorageService>();
+
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<PropertyQuery>()
+    .AddFiltering()
+    .AddSorting();
 
 //Database
 builder.Services.AddDbContext<PropertyDbContext>(options =>
@@ -73,6 +80,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// GraphQL endpoint
+app.MapGraphQL("/graphql");
 
 // Health endpoints
 app.MapHealthChecks("/health", new HealthCheckOptions
