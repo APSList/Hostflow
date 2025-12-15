@@ -42,4 +42,4 @@ jobs:
             --set image.tag=latest \
             --set image.pullPolicy=Always \
             --set actualSecrets.STRIPE_API_KEY="${{ secrets.STRIPE_KEY }}" \
-            --set actualSecrets.DATABASE_URL="${{ secrets.DB_URL }}" \
+            --set actualSecrets.DATABASE_URL="${{ secrets.DB_URL_PAYMENT }}" \
