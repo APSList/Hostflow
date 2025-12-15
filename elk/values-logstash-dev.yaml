@@ -1,0 +1,41 @@
+replicas: 1
+
+logstashPipeline:
+  logstash.conf: |
+    input {
+      http {
+        port => 5044
+        codec => json_lines
+      }
+    }
+
+    filter {
+      if "_jsonparsefailure" in [tags] {
+        drop { }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch-master:9200"]
+        index => "hostflow-logs-%{+YYYY.MM.dd}"
+      }
+
+      stdout { codec => rubydebug }
+    }
+
+service:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 5044
+      targetPort: 5044
+      protocol: TCP
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
