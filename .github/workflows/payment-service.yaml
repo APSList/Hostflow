@@ -35,6 +35,7 @@ jobs:
         run: |
           cd services/payment-service
           dotnet test --no-build --verbosity normal
+
   build:
     runs-on: ubuntu-latest
     steps:
