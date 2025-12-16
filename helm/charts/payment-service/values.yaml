@@ -89,6 +89,6 @@ env:
 # Secrets for sensitive information (mapped for .NET)
 secrets:
   ConnectionStrings__Supabase:
-    key: DATABASE_URL
+    key: DATABASE_URL_VALUE
   Stripe__ApiKey:
-    key: STRIPE_API_KEY
+    key: STRIPE_API_KEY_VALUE
