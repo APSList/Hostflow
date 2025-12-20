@@ -59,7 +59,7 @@ spec:
             - name: {{ $envVarName | quote }} # Ime ENV spremenljivke v aplikaciji
               valueFrom:
                 secretKeyRef:
-                  name: "payment-secrets"     # Ime K8s Secreta
+                  name: "booking-secrets"     # Ime K8s Secreta
                   key: {{ $secretRef.key | quote }} # Ključ znotraj K8s Secreta
           {{- end }}
           {{- end }}

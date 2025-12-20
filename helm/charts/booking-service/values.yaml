@@ -30,6 +30,8 @@ podLabels: {}
 podSecurityContext: {}
 securityContext: {}
 
+actualSecrets: {}
+
 service:
   type: LoadBalancer   # Expose via LoadBalancer
   port: 8080          # Match the container port
