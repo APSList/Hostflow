@@ -47,8 +47,25 @@ Go mikrostoritve uporabljajo template https://github.com/alexmodrono/gin-restapi
 
 .NET projekti uporabljajo basic .NET projektno strukturo - razčlenitev na Business, Api in Test logiko
 
-## Zagon lokalno
-TODO
+## Logging (ELK)
 
-## Zagon Docker
-TODO
+V mapi `elk/` je na voljo konfiguracija za logiranje v ELK sklad.
+
+Za lokalno testiranje je na voljo tudi `docker-compose.yml` za zagon ELK sklada
+
+```bash
+docker compose up --build
+```
+Pazi kako konfiguriraš klic na logstash znotraj mikrostoritve:
+- Če mikrostoritev teče lokalno, potem je naslov logstasha localhost:5044
+- Če mikrostoritev teče znotraj docker omrežja, potem je naslov logstasha logstash:5044
+
+TODO: Dodati deploy in konkretno konfiguracija za dev in produkcijo, ki je ločena od lokalnega testiranja.
+
+## Lokalni zagon
+Trenutno se lahko vsaka mikrostoritev zažene lokalno znotraj IDE-ja (GoLand, Visual Studio, ...).
+Ali preko Docker datoteke.
+TODO: Potrebno dodati docker-compose za zagon vseh mikrostoritev skupaj.
+
+## Helm in deploy
+TODO:

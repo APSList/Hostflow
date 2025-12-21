@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - actions-test
+    paths:
+      - "services/booking-service/**"
+      - ".github/workflows/booking-service.yaml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          cd services/communications
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/booking-service:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/booking-service:latest
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install hostflow ./helm/charts/booking-service \
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/booking-service \
+            --set image.tag=latest \
+            --set service.port=8080
