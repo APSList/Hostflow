@@ -13,7 +13,7 @@ image:
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: profile-service-dev
 
 serviceAccount:
   create: true
