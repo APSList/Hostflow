@@ -34,7 +34,7 @@ actualSecrets: {}
 
 env:
   LOG_LEVEL: "info"
-  HTTP_PORT: "8080"
+  APP_PORT: "8080"
 
 service:
   type: LoadBalancer   # Expose via LoadBalancer
