@@ -67,14 +67,14 @@ livenessProbe:
   httpGet:
     path: /health/live
     port: 8080
-  initialDelaySeconds: 10
+  initialDelaySeconds: 20
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
     path: /health/ready
     port: 8080
-  initialDelaySeconds: 5
+  initialDelaySeconds: 10
   periodSeconds: 5
 
 autoscaling:
