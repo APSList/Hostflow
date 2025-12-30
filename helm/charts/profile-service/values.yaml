@@ -42,14 +42,14 @@ service:
   port: 8080
 
 ingress:
-  enabled: false
-  className: ""
+  enabled: true
+  className: "nginx"
   annotations: {}
   hosts:
-    - host: chart-example.local
+    - host: hostflow.dev
       paths:
-        - path: /
-          pathType: ImplementationSpecific
+        - path: /profile
+          pathType: Prefix
   tls: []
 
 httpRoute:
