@@ -45,17 +45,17 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt"
+#    cert-manager.io/cluster-issuer: "letsencrypt"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: hostflow.dev
       paths:
         - path: /profile(/|$)(.*)
           pathType: Prefix
-  tls:
-    - hosts:
-        - hostflow.dev
-      secretName: profile-tls
+#  tls:
+#    - hosts:
+#        - hostflow.dev
+#      secretName: profile-tls
 
 httpRoute:
   enabled: false
