@@ -45,11 +45,11 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: hostflow.dev
       paths:
-        - path: /profile
+        - path: /profile(/|$)(.*)
           pathType: Prefix
   tls: []
 
