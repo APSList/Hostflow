@@ -32,6 +32,10 @@ securityContext: {}
 
 actualSecrets: {}
 
+env:
+  LOG_LEVEL: "info"
+  HTTP_PORT: "8080"
+
 service:
   type: LoadBalancer   # Expose via LoadBalancer
   port: 8080          # Match the container port
@@ -88,5 +92,5 @@ tolerations: []
 affinity: {}
 
 secrets:
-  ConnectionStrings__Supabase:
-    key: DATABASE_URL_VALUE
+  DATABASE_URL:
+    key: DATABASE_URL
