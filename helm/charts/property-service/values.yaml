@@ -29,19 +29,24 @@ securityContext: {}
 actualSecrets: {}
 
 service:
-  type: LoadBalancer   # Expose via LoadBalancer
-  port: 8080          # Match the container port
+  type: ClusterIP
+  port: 8080
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
+  enabled: true
+  className: "nginx"
+  annotations:
+#    cert-manager.io/cluster-issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: chart-example.local
+    - host: hostflow.dev
       paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
+        - path: /property(/|$)(.*)
+          pathType: Prefix
+#  tls:
+#    - hosts:
+#        - hostflow.dev
+#      secretName: property-tls
 
 httpRoute:
   enabled: false
