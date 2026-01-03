@@ -36,17 +36,17 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-#    cert-manager.io/cluster-issuer: "letsencrypt"
+    cert-manager.io/cluster-issuer: "letsencrypt"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: hostflow.dev
+    - host: hostflow.software
       paths:
         - path: /payment(/|$)(.*)
           pathType: Prefix
-#  tls:
-#    - hosts:
-#        - hostflow.dev
-#      secretName: payment-tls
+  tls:
+    - hosts:
+        - hostflow.software
+      secretName: payment-tls
 
 httpRoute:
   enabled: false
