@@ -45,7 +45,7 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-          # 1. NeobËutljive spremenljivke iz .env
+          # 1. Neobƒçutljive spremenljivke iz .env
           {{- with .Values.env }}
           {{- range $key, $value := . }}
           - name: {{ $key | quote }}
@@ -53,14 +53,14 @@ spec:
           {{- end }}
           {{- end }}
 
-          # 2. ObËutljive spremenljivke (Secrete)
+          # 2. Obƒçutljive spremenljivke (Secrete)
           {{- if .Values.secrets }}
           {{- range $envVarName, $secretRef := .Values.secrets }}
           - name: {{ $envVarName | quote }} # Ime ENV spremenljivke v aplikaciji
             valueFrom:
               secretKeyRef:
                 name: "property-secrets"     # Ime K8s Secreta
-                key: {{ $secretRef.key | quote }} # KljuË znotraj K8s Secreta
+                key: {{ $secretRef.key | quote }} # Kljuƒç znotraj K8s Secreta
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
