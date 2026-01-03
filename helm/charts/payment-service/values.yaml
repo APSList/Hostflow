@@ -90,10 +90,23 @@ affinity: {}
 # Environment variables for the payment service
 env:
   ASPNETCORE_ENVIRONMENT: Development
+  Kafka__BootstrapServers: "kafka:9092"
+  Kafka__ClientId: "payment-service"
+  Kafka__PaymentsTopic: "booking.payments"
 
 # Secrets for sensitive information (mapped for .NET)
 secrets:
   ConnectionStrings__Supabase:
-    key: DATABASE_URL_VALUE
+    key: DB_URL_PAYMENT
   Stripe__ApiKey:
-    key: STRIPE_API_KEY_VALUE
+    key: STRIPE_KEY
+  Stripe__WebhookSecret:
+    key: STRIPE_WEBHOOK_SECRET
+  Kafka__SaslMechanism:
+    key: KAFKA_SASL_MECHANISM
+  Kafka__SecurityProtocol:
+    key: KAFKA_SECURITY_PROTOCOL
+  Kafka__SaslUsername:
+   key: KAFKA_SASL_USERNAME
+  Kafka__SaslPassword:
+    key: KAFKA_SASL_PASSWORD
