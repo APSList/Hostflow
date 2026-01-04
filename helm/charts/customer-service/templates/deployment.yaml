@@ -45,15 +45,15 @@ spec:
           env:
 
           # 2. Občutljive spremenljivke (Secrete)
-          { { - if .Values.secrets } }
-          { { - range $envVarName, $secretRef := .Values.secrets } }
+          {{- if .Values.secrets }}
+          {{- range $envVarName, $secretRef := .Values.secrets }}
           - name: { { $envVarName | quote } } # Ime ENV spremenljivke v aplikaciji
             valueFrom:
               secretKeyRef:
                 name: "profile-secrets"     # Ime K8s Secreta
-                key: { { $secretRef.key | quote } } # Ključ znotraj K8s Secreta
-          { { - end } }
-          { { - end } }
+                key: { { $secretRef.key | quote }} # Ključ znotraj K8s Secreta
+          {{- end }}
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
