@@ -43,13 +43,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
-          # 1. Neobčutljive spremenljivke iz .env
-          { { - with .Values.env } }
-          { { - range $key, $value := . } }
-          - name: { { $key | quote } }
-            value: { { $value | quote } }
-          { { - end } }
-          { { - end } }
 
           # 2. Občutljive spremenljivke (Secrete)
           { { - if .Values.secrets } }
