@@ -165,5 +165,5 @@ tolerations: []
 affinity: {}
 
 secrets:
-  DATABASE_URL:
-    key: DATABASE_URL
+  CUSTOMER_DB_URL:
+    key: CUSTOMER_DB_URL
