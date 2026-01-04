@@ -60,10 +60,11 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: hostflow.software
       paths:
-        - path: /customer
+        - path: /()(customer.CustomerService/.*)
           pathType: ImplementationSpecific
   tls:
     - hosts:
