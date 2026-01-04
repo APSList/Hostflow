@@ -62,12 +62,12 @@ ingress:
   hosts:
     - host: hostflow.software
       paths:
-        - path: /customer(/|$)(.*)
+        - path: /communication(/|$)(.*)
           pathType: Prefix
   tls:
     - hosts:
       - hostflow.software
-      secretName: customer-tls
+      secretName: communication-tls
 
 
 # -- Expose the service via gateway-api HTTPRoute
