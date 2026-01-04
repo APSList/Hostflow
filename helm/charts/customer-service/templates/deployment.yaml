@@ -43,15 +43,22 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
+            # 1. Neobčutljive spremenljivke iz .env
+          {{- with .Values.env }}
+          {{- range $key, $value := . }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
 
-          # 2. Občutljive spremenljivke (Secrete)
+            # 2. Občutljive spremenljivke (Secrete)
           {{- if .Values.secrets }}
           {{- range $envVarName, $secretRef := .Values.secrets }}
-          - name: { { $envVarName | quote } } # Ime ENV spremenljivke v aplikaciji
-            valueFrom:
-              secretKeyRef:
-                name: "profile-secrets"     # Ime K8s Secreta
-                key: { { $secretRef.key | quote }} # Ključ znotraj K8s Secreta
+            - name: {{ $envVarName | quote }} # Ime ENV spremenljivke v aplikaciji
+              valueFrom:
+                secretKeyRef:
+                  name: "profile-secrets"     # Ime K8s Secreta
+                  key: {{ $secretRef.key | quote }} # Ključ znotraj K8s Secreta
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
