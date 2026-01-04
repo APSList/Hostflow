@@ -162,3 +162,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secrets:
+  DATABASE_URL:
+    key: DATABASE_URL
