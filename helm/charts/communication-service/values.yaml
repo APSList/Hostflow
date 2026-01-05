@@ -51,23 +51,25 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 50051
 
 ingress:
   enabled: true
   className: "nginx"
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
   hosts:
     - host: hostflow.software
       paths:
-        - path: /communication(/|$)(.*)
+        - path: /
           pathType: Prefix
   tls:
     - hosts:
-      - hostflow.software
-      secretName: communication-tls
+        - hostflow.software
+      secretName: customer-tls
 
 
 # -- Expose the service via gateway-api HTTPRoute
