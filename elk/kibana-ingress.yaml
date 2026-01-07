@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana
+  namespace: elastic-stack
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # Povej, da Kibana govori HTTPS
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: hostflow.software
+    http:
+      paths:
+      # Preprosta Prefix logika je dovolj
+      - path: /kibana
+        pathType: Prefix
+        backend:
+          service:
+            name: tiny-kb-http
+            port:
+              number: 5601
