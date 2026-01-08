@@ -32,7 +32,7 @@ service:
 ingress:
   enabled: true
   className: "nginx"
-  # Za Angular SPA na root "/" rewrite ni potreben in lahko dela škodo.
+  # Za Angular SPA na root "/" rewrite ni potreben in lahko dela Å¡kodo.
   annotations: {}
   hosts:
     - host: hostflow.software
