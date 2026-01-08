@@ -60,16 +60,6 @@ httpRoute:
 
 resources: {}
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: 80
-
-readinessProbe:
-  httpGet:
-    path: /
-    port: 80
-
 autoscaling:
   enabled: false
   minReplicas: 1
