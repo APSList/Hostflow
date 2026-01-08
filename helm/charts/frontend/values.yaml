@@ -37,7 +37,7 @@ ingress:
   hosts:
     - host: hostflow.software
       paths:
-        - path: /
+        - path: /ui
           pathType: Prefix
   tls:
     - hosts:
