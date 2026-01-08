@@ -35,8 +35,9 @@ actualSecrets: {}
 env:
   LOG_LEVEL: "info"
   APP_PORT: "8080"
-  KAFKA_BROKERS: "kafka.dev.svc.cluster.local:9092"
-  KAFKA_USER: "user1"
+  KAFKA_BROKERS: "pkc-56d1g.eastus.azure.confluent.cloud:9092"
+  KAFKA_USER: "BBBTFBHHRIDYRUGI"
+  KAFKA_TOPIC: "booking.payments"
 
 service:
   type: ClusterIP
@@ -101,3 +102,5 @@ affinity: {}
 secrets:
   DATABASE_URL:
     key: DATABASE_URL
+  KAFKA_PASSWORD:
+    key: KAFKA_PASSWORD
