@@ -5,12 +5,9 @@
 replicaCount: 1
 
 image:
-  # Nastavi default na nekaj "varnega" (da se ne deploya nginx po pomoti).
-  # V CI to obièajno prepišeš z:
-  # --set image.repository=$IMAGE_REPO --set image.tag=$IMAGE_TAG
   repository: leonalessio/frontend
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
