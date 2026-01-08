@@ -102,3 +102,5 @@ affinity: {}
 secrets:
   DATABASE_URL:
     key: DATABASE_URL
+  KAFKA_PASSWORD:
+    key: KAFKA_PASSWORD
