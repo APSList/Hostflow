@@ -90,7 +90,7 @@ affinity: {}
 # Environment variables for the payment service
 env:
   ASPNETCORE_ENVIRONMENT: Development
-  ASPNETCORE_PATHBASE: "/payment"
+  SwaggerPrefix: "/payment"
   Kafka__BootstrapServers: "pkc-56d1g.eastus.azure.confluent.cloud:9092"
   Kafka__ClientId: "payment-service"
   Kafka__PaymentsTopic: "booking.payments"
