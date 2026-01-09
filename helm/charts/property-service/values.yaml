@@ -90,6 +90,7 @@ affinity: {}
 # Environment variables for the payment service
 env:
   ASPNETCORE_ENVIRONMENT: Development
+  SwaggerPrefix: "/property"
 
 # Secrets for sensitive information (mapped for .NET)
 secrets:
