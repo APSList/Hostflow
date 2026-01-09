@@ -59,14 +59,13 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
-    nginx.ingress.kubernetes.io/backend-protocol-version: "HTTP2"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
   hosts:
     - host: hostflow.software
       paths:
-        - path: /communication(/|$)
-          pathType: ImplementationSpecific
+        - path: /
+          pathType: Prefix
   tls:
     - hosts:
         - hostflow.software
