@@ -64,7 +64,7 @@ ingress:
   hosts:
     - host: hostflow.software
       paths:
-        - path: /communication\.*
+        - path: /
           pathType: Prefix
   tls:
     - hosts:
