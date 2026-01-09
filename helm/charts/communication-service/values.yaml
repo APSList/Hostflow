@@ -163,3 +163,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secrets:
+  MAILERSEND_API_KEY:
+    key: MAILERSEND_API_KEY
