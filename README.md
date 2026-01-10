@@ -47,25 +47,85 @@ Go mikrostoritve uporabljajo template https://github.com/alexmodrono/gin-restapi
 
 .NET projekti uporabljajo basic .NET projektno strukturo - razčlenitev na Business, Api in Test logiko
 
-## Logging (ELK)
+## Centralizirano beleženje dnevnikov
+### Dostop do kibane
+- URL: `https://hostflow.software/kibana`
+- Uporabnik: `elastic`
+- Geslo: (Uporabi geslo, ki si ga pridobil v koraku **4**)
 
-V mapi `elk/` je na voljo konfiguracija za logiranje v ELK sklad.
+### Navodila za namestitev ELK (Elastic Stack) + Fluent Bit
 
-Za lokalno testiranje je na voljo tudi `docker-compose.yml` za zagon ELK sklada
+Opisan je celoten postopek namestitve **Elasticsearch**, **Kibana** (preko ECK operatorja) in **Fluent Bit** za zbiranje logov na Kubernetes gruči.
+
+#### 1. Namestitev ECK Operatorja
+
+Najprej namestimo **Elastic Cloud on Kubernetes (ECK)** operator, ki skrbi za upravljanje Elastic Stack resursov.
 
 ```bash
-docker compose up --build
+# 1. Dodajanje Elastic Helm repozitorija
+helm repo add elastic https://helm.elastic.co
+helm repo update
+
+# 2. Namestitev operatorja v ločen namespace 'elastic-system'
+helm upgrade --install elastic-operator elastic/eck-operator   -n elastic-system   --create-namespace
+
+# 3. Preverjanje
+kubectl -n elastic-system get pods
 ```
-Pazi kako konfiguriraš klic na logstash znotraj mikrostoritve:
-- Če mikrostoritev teče lokalno, potem je naslov logstasha localhost:5044
-- Če mikrostoritev teče znotraj docker omrežja, potem je naslov logstasha logstash:5044
+---
 
-TODO: Dodati deploy in konkretno konfiguracija za dev in produkcijo, ki je ločena od lokalnega testiranja.
+#### 2. Priprava Namespace-ov
 
-## Lokalni zagon
-Trenutno se lahko vsaka mikrostoritev zažene lokalno znotraj IDE-ja (GoLand, Visual Studio, ...).
-Ali preko Docker datoteke.
-TODO: Potrebno dodati docker-compose za zagon vseh mikrostoritev skupaj.
+Ustvarimo ločena namespace-a za bazo in za logiranje.
 
-## Helm in deploy
-TODO:
+```bash
+kubectl create namespace elastic-stack
+kubectl create namespace logging
+```
+
+---
+
+#### 3. Zagon baze in vmesnika
+
+Uporabimo pripravljene manifest datoteke.
+
+```bash
+# Namestitev Elasticsearch
+kubectl apply -f elasticsearch.yaml
+
+# Namestitev Kibane
+kubectl apply -f kibana.yaml
+```
+---
+
+#### 4. Pridobivanje gesla in konfiguracija
+
+Ko se Elasticsearch postavi, operator samodejno ustvari uporabnika `elastic`. Pridobiti moramo njegovo geslo in ustvariti `Secret` v `logging` namespace-u, da se bo Fluent Bit lahko povezal.
+
+Pridobi geslo
+```powershell
+$Secret = kubectl -n elastic-stack get secret tiny-es-elastic-user -o jsonpath="{.data.elastic}"
+$ES_PASSWORD = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Secret))
+Write-Host "Geslo je: $ES_PASSWORD"
+```
+Ustvari `Secret` za Fluent Bit
+V spodnjem ukazu se uporabi spremenljivka `$ES_PASSWORD` (če si uporabil zgornje ukaze). Če spremenljivka ni nastavljena, ročno zamenjaj `$ES_PASSWORD` s pravim geslom.
+
+```bash
+kubectl -n logging create secret generic es-credentials   --from-literal=ES_HOST=tiny-es-http.elastic-stack.svc   --from-literal=ES_USER=elastic   --from-literal=ES_PASSWORD="$ES_PASSWORD"   --dry-run=client -o yaml | kubectl apply -f -
+```
+
+---
+
+#### 5. Zagon Fluent Bit in Ingressa
+
+Sedaj, ko imamo geslo, lahko zaženemo zbiranje logov in odpremo dostop do Kibane.
+
+```bash
+# Zagon Fluent Bit (začne pošiljati loge v Elasticsearch)
+kubectl apply -f fluent-bit-es.yaml
+
+# Konfiguracija Ingressa (omogoči dostop preko hostflow.software/kibana)
+kubectl apply -f kibana-ingress.yaml
+```
+---
