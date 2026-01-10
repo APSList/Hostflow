@@ -167,5 +167,7 @@ tolerations: []
 affinity: {}
 
 secrets:
-  MAILERSEND_API_KEY:
-    key: MAILERSEND_API_KEY
+  HASHICORP_VAULT_TOKEN:
+    key: HASHICORP_VAULT_TOKEN
+  HASHICORP_VAULT_ADDR:
+    key: HASHICORP_VAULT_ADDR
