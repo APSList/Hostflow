@@ -124,15 +124,17 @@ resources: {}
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
-  tcpSocket:
-    port: 50051
+  httpGet:
+    path: /health
+    port: 8000
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
 
 readinessProbe:
-  tcpSocket:
-    port: 50051
+  httpGet:
+    path: /health
+    port: 8000
   initialDelaySeconds: 5
   periodSeconds: 10
   failureThreshold: 3
