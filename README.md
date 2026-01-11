@@ -1,6 +1,90 @@
 
 # Hostflow - razvoj
 
+Hostflow je SAAS platforma za upravljanje z nepremičninami za kratkoročni najem. Omogoča enostavno, ekonomično in centralizirano upravljanje z rezervacijami, strankami in transakcijami tudi lastnikom brez tehničnega predznanja. 
+
+## Arhitektura sistema
+
+Hostflow je zasnovana kot Cloud-Native mikrostoritvena aplikacija. Sestavljena je iz 6 mikrostoritev, vsaka s svojim naborom funkcionalnosti :
+* Booking (REST):  
+  * Vnos/Spremembe/Preklic/Pregled rezervacij 
+* Payment (REST): 
+  * Vnos/Spremembe/Brisanje/Pregled plačil 
+  * Ročna potrditev in preklic plačila 
+  * Obdelava dogodkov iz platforme za plačila 
+* Property (REST, graphQL): 
+  * Pregled (filtriranje, sortiranje) enot za oddajanje 
+  * Vnos/Urejanje/Brisanje enot za oddajanje 
+  * Urejanje slik za enoto 
+* Communication (gRPC): 
+  * Pošiljanje email sporočil lastnikom in strankam 
+* Profile (REST): 
+  * Omejevanje dostopa glede na uporabnika in njegovo vlogo, vnos/pregled/preklic uporabnikov organizacije (omogočeno le lastniku (“owner”) organizacije 
+* Customer (gRPC): 
+  * Pregled strank, vnos/posodabljanje/vodenje podatkov o strankah
+ 
+Podrobnejša dokumentacija vsake mikrostoritve se nahaja v readme datoteki znotraj svojega repozitorija. Prav tako je tam opisan dostop do dokumentacije API vsake storitve.
+ 
+Topologija aplikacija je zasnovana kot na spodnjem diagramu:
+<img width="1037" height="771" alt="hostflow drawio (4)" src="https://github.com/user-attachments/assets/4ad273c4-4255-4050-9d96-b02fe6900ae7" />
+
+Vsaka mikrostoritev ima svojo podatkovno bazo na **Supabase** platformi. Poleg tega sistem je odvisen od naslednjih komponent:
+* **Stripe API**
+  * Plačila so implementirana preko Stripe platforme
+* **Supabase Auth**
+  * Za avtentikacijo, avtorizacijo in omejevanje dostopa se uporablja JWT žeton izda s strani Supabase Auth
+* **MailerService**
+  * Za pošiljanje e-poštnih sporočil
+* **Kafka message broker**
+  * Za asinhrono obdelovanje sporočil
+* **Nginx ingress controller**
+  * Za izpostavitev aplikacije izven cluster, določitev pravil in zagotavljenja TLS
+* **Angular uporabniški vmesnik**
+
+## Namestitev aplikacije
+Aplikacija je nameščane na javnem **Azure** oblaka. Uporablja storitev managed Kubernetes servis za Kubernetes gruščo.
+ 
+## Izpostavitev aplikacije
+Aplikacija je javno dostopna preko url: [https://hostflow.software/ui](https://hostflow.software/ui )
+
+Za dostop do REST API storitev in uporabniškega vmesnika izven grušča poskrbi **Nginx ingress controller**. Pravila za usmerjanje so naslednja:
+* https://hostflow.software/ui => Uporabniški vmesnik 
+* https://hostflow.software/booking => Booking storitev 
+* https://hostflow.software/profile => Profile storitev 
+* https://hostflow.software/payment => Payment storitev 
+* https://hostflow.software/property => Property storitev
+
+Mikrostoritve, ki ne uporabljajo REST protokola pa so dostopne samo znotraj grušča.
+
+**Nginx** s  pomočjo cert-manager samodejno zagotavlja Let's Encrypt **TLS** potrdila za varno **HTTPS** povezavo do vseh mikroservisov. 
+
+## Avtentikacija in avtorizacija ##
+Avtentikacija in avtorizacija uporabnikov temelji na storitvi **Supabase Auth**.  Celoten proces temelji na industrijskih protokolih OAuth2 (za avtorizacijo) in OpenID Connect (OIDC) (za avtentikacijo). Ob uspešni prijavi sistem izda varno podpisan JWT (JSON Web Token) žeton. Odjemalec (Angular frontend) posreduje žeton zalednim mikrostoritvam v glavi HTTP zahtevka (Authorization: Bearer <token>). V žetonu so tudi vklučeni metapodatki uporabnika o njegovi organizaciji in vlogo, ki so ključni za zagotavljanje večnajemništva.
+
+## Večnajemništvo ##
+Aplikacija za zagotavljanje večnajemništva uporabna model deljenje baze z logično izolacije, kjer podatki organizacij ločijo po obveznem polju “organization_id”. Tabele imajo nastavljene Row Level Security pravila, ki na nivoju baze samodejno filtrira podatke glede na identiteto podano v JWT žetonu. 
+
+Uporabniki so ločeni v organizacije (naročnike aplikacije). Vsaka organizacija s strani administratorjev sistema Hostflow prejme uporabnika z vlogo "OWNER", ta uporabnik lahko nato kreira poljubno mnogo uporabnikov z vlogo "MEMBER". Tem uporabnikom je onemogečen pregled nad uporabniki in plačila ter dodajanje novih uporabnikov.
+
+## Create Booking Flow
+* Upravitelj oz. Zunanji sistem ustavari novo rezervacijo in stranka izvede plačilo 
+* Upravitelj preko uporabniškega vmesnika oz. Zunanji sistem izbere nastanitev in željen termin. 
+* Booking preveri ali je enota razpoložljiva za izbran termin. 
+* Če je razpoložljiva ustvari rezervacijo in pokliče Payment za inicializacijo sporočila. 
+* Kadar Booking prejme odgovor posodobi rezervacijo in jo posavi v status PAYMENT_REQUIRED. 
+* Serverless Supabase Edge funkcija booking-status-update se sproži ob posodobitvi statusa rezervaciji in pokliče Communication za inicializacijo pošiljanja e-poštnega spročila za plačilo. 
+* Stranka dobi e-poštno sporočilo z url-jem za plačilo in ga plača. 
+*Uspešno plačilo: 
+  * Payment iz Stripe plačilnega sistema dobi dogodek, da je bilo plačilo uspešno. 
+  * Payment preko sporočilne vrste sporoči dogodek o uspešnem plačilu, ki ga Booking prebere in označi rezervacijo kot potrjeno. 
+  * Ob posodobitvi status se ponovno sproži Serverless Supabase funkcija, ki pošlje zahtevo na Communication za pošiljanja maila o potrditvi rezervacije 
+  * Communication pošlje mail stranki o uspešnem plačilu in potrdilo o potrjeni rezervaciji. 
+* Neuspešno plačilo:
+  * Payment iz Stripe plačilnega sistema dobi dogodek, da je bilo plačilo neuspešno. 
+  * Payment preko sporočilne vrste sporoči dogodek o neuspešnem plačilu, ki ga Booking prebere in označi rezervacijo kot neuspešno. 
+  * Ob posodobitvi status se ponovno sproži Serverless Supabase funkcija, ki pošlje zahtevo na Communication za pošiljanja maila o neuspešnem plačilu. 
+  * Kliče Communication, ki pošlje mail o neuspešnem plačilu. 
+
 ## Branching
 | Branch        | Namen                                              | Deploy okolje        | Verzije                                                                 |
 |---------------|----------------------------------------------------|----------------------|-------------------------------------------------------------------------|
