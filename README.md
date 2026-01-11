@@ -4,43 +4,48 @@
 ## Branching
 | Branch        | Namen                                              | Deploy okolje        | Verzije                                                                 |
 |---------------|----------------------------------------------------|----------------------|-------------------------------------------------------------------------|
-| **feature/**  | Razvoj posamezne funkcionalnosti ali izboljšave    | Lokalno / dev        | Brez verzije; verzija se določi ob merge v `dev`                        |
-| **bug/**      | Odpravljanje napak                                 | Lokalno / dev        | Brez verzije; verzija se določi ob merge v `dev`                        |
-| **dev**       | Integracija vseh funkcionalnosti za testiranje     | Development okolje   | Ob merge lahko poveča *minor* ali *build* verzijo                       |
-| **main**      | Stabilna, produkcijsko pripravljena veja           | Staging / Production | Merge iz `dev` označi *release* verzijo (npr. `v1.2.0`)                 |
+| **feature/**  | Razvoj posamezne funkcionalnosti ali izboljšave    | Lokalno        | Brez verzije                      |
+| **dev**       | Integracija vseh funkcionalnosti za testiranje     | Development   | Hash zadnjega commita                       |
+| **main**      | Stabilna, produkcijsko pripravljena veja           | Production | Release please PR merge samodejno poveca verzijo (npr. `v1.2.0`)                 |
 
 ## Proces razvoja
 
 ### 1. Razvoj nove funkcionalnosti
-- Ustvari se `feature/<opis>` vejo iz `dev`.
+- Ustvari se `feature/<opis>` vejo iz `main`.
 - Razvijalci implementirajo funkcionalnost.
-- Po koncu se ustvari **Pull Request (PR)** v `dev`.
+- Po koncu se ustvari **Pull Request (PR)** v `main`.
 - PR vključuje **code review** in testiranje.
 
 ### 2. Prenos v dev
-- Merge feature veje v `dev`.
+- Spremembe (commite) se cherry-pick-a v `dev` branch.
 - Na `dev` se izvede **CI/CD build** in deploy na dev okolje.
 - Preveri se delovanje vseh novih feature-jev skupaj.
 
-### 3. Priprava staging (main)
-- Ko so vse funkcionalnosti testirane na `dev`, se `dev` merge-a v `main`.
-- Na `main` se izvede **staging deploy**.
-- Staging verzija je pripravljena za testiranje pred produkcijo.
-- 
-### 4. Produkcija
-- Namestitev na produkcijo se potem zaradi občutljivosti zaganja ročno.
+### 3. Release (main)
+- Ko je funkcionalnosti testirane na `dev`, se PR-ji merge-ajo v `main`.
+- Za nov relese se merge-a autorelease PR
+- Release Github workflow propagira novo verzijo in jo namesti
+- `dev` branch se ročno resetira na `main`
+
+## 1. Okolja
+Okolje se ločuje na Dev in Prod. Na Dev se namešča ob vsaki spremembi na `dev` veji, na Prod pa ob releasu.
+
+## 2. Secrets
+Secrets se hranijo glede na okolje in se preko github actions prenesejo v yamle za deployment itd.
 
 ## Github actions
 
-### 1. Okolja
-Trenutno je na voljo le Dev okolje, po potrebi se loči na staging.
+### 1. CI/CD
+Dev CI/CD workflow se sproži ob vsakem `push`-u na vejo `dev`.
 
-### 2. Secrets
-Secrets se hranijo glede na okolje in se preko github actions prenesejo v yamle za deployment itd.
+### 2. Release please
+Release please github action ustvari release PR ob vsakem `merge`-u v `main` vejo. PR doloci novo verzijo in doda povzetek sprememb v opis.
 
-### 3. CI/CD
-- Akcije se izvedejo ob akciji `psuh`. Izvede se build, testi, push na docker registry in deploy s helm charts - specfično samo tisti servisi, kjer je do spremembe prišlo.
-- Produkcijska namestitev se proži ročno.
+### 3. PR
+PR github action preveri veljavnost PR naslova in zazene teste, enake kot pri CI/CD workflow-u. Brez testov naj PR nebi zdruzil v `main` branch.
+
+### 4. Release
+Ko se release please PR `merge`-a v main, se ustvari release, ki sprozi github action za gradnjo iz `main` veje in namestitev na `prod` okolje.
 
 ## Struktura projekta
 Go mikrostoritve uporabljajo template https://github.com/alexmodrono/gin-restapi-template
