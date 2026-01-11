@@ -9,6 +9,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
+  selector:
     matchLabels:
       {{- include "communication-service.selectorLabels" . | nindent 6 }}
   template:
@@ -44,6 +45,25 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            # 1. Neobčutljive spremenljivke iz .env
+              {{- with .Values.env }}
+              {{- range $key, $value := . }}
+              - name: {{ $key | quote }}
+                value: {{ $value | quote }}
+              {{- end }}
+              {{- end }}
+
+              # 2. Občutljive spremenljivke (Secrete)
+              {{- if .Values.secrets }}
+              {{- range $envVarName, $secretRef := .Values.secrets }}
+              - name: {{ $envVarName | quote }} # Ime ENV spremenljivke v aplikaciji
+                valueFrom:
+                  secretKeyRef:
+                    name: "communication-secrets"     # Ime K8s Secreta
+                    key: {{ $secretRef.key | quote }} # Ključ znotraj K8s Secreta
+              {{- end }}
+              {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

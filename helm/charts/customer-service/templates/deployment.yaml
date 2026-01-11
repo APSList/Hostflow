@@ -41,9 +41,26 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
+            - containerPort: {{ .Values.service.port }}
+          env:
+            # 1. Neobčutljive spremenljivke iz .env
+          {{- with .Values.env }}
+          {{- range $key, $value := . }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+
+            # 2. Občutljive spremenljivke (Secrete)
+          {{- if .Values.secrets }}
+          {{- range $envVarName, $secretRef := .Values.secrets }}
+            - name: {{ $envVarName | quote }} # Ime ENV spremenljivke v aplikaciji
+              valueFrom:
+                secretKeyRef:
+                  name: "customer-secrets"     # Ime K8s Secreta
+                  key: {{ $secretRef.key | quote }} # Ključ znotraj K8s Secreta
+          {{- end }}
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

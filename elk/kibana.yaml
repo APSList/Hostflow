@@ -1,0 +1,33 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: tiny
+  namespace: elastic-stack
+spec:
+  version: 9.2.3
+  count: 1
+  elasticsearchRef:
+    name: tiny
+  
+  # Nastavitve za /kibana path (to mora biti tukaj, ne pod containers!)
+  config:
+    server.basePath: "/kibana"
+    server.rewriteBasePath: true
+    server.publicBaseUrl: "https://hostflow.software/kibana"
+
+  podTemplate:
+    spec:
+      containers:
+      - name: kibana
+        env:
+        # Znižano na 256MB, ker ima pod samo 512MB limita.
+        # Èe bi pustili 800, bi se pod takoj ubil.
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=512"
+        resources:
+          requests:
+            cpu: 250m
+            memory: 2Gi  # <--- Željena sprememba
+          limits:
+            cpu: 1000m
+            memory: 2Gi  # <--- Željena sprememba
