@@ -51,7 +51,7 @@ ingress:
     - host: hostflow.software
       paths:
         - path: /profile(/|$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
   tls:
     - hosts:
         - hostflow.software
