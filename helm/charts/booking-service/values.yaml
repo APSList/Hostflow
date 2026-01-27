@@ -53,7 +53,7 @@ ingress:
     - host: hostflow.software
       paths:
         - path: /booking(/|$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
   tls:
     - hosts:
         - hostflow.software

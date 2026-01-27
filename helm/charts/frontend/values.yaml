@@ -38,7 +38,7 @@ ingress:
     - host: hostflow.software
       paths:
         - path: /ui
-          pathType: Prefix
+          pathType: ImplementationSpecific
   tls:
     - hosts:
         - hostflow.software

@@ -65,7 +65,7 @@ ingress:
     - host: hostflow.software
       paths:
         - path: /
-          pathType: Prefix
+          pathType: ImplementationSpecific
   tls:
     - hosts:
         - hostflow.software
